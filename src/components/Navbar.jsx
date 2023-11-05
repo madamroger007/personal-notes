@@ -1,20 +1,12 @@
 import React from "react";
+import SearchButton from "./SearchButton";
 
-
-function Navbar({ onSearch,search }) {
-
+function Navbar({ onSearch, search }) {
   return (
     <nav className="note-app__header">
       <h1>Notes</h1>
-      
-    <input
-      type="text"
-      className="note-search"
-      placeholder="Search..."
-      value={search}
-      onChange={onSearch}
-    />
-  
+
+      <SearchButton onSearch={onSearch} search={search} />
     </nav>
   );
 }

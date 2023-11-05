@@ -9,7 +9,6 @@ class CatatanInput extends React.Component {
     this.state = {
       title: "",
       body: "",
-      bodyCharLimit: 50,
     };
 
     autoBind(this);
@@ -33,34 +32,45 @@ class CatatanInput extends React.Component {
 
   onSubmitEventHandler(ev) {
     ev.preventDefault();
-    const title = this.state.title.length;
-    title > 50
+    const { title } = this.state;
+    const titles = title.length;
+    titles > 50
       ? alert("Inputan Melebihi Batass!!")
       : this.props.addCatatan(this.state);
   }
+
+  onLimitCharHandler(text, limit) {
+    return limit - text.length;
+  }
   render() {
-    const character = this.state.bodyCharLimit - this.state.title.length;
+    const { title } = this.state;
+    const titleCharacter = this.onLimitCharHandler(title, 50);
 
     return (
       <form onSubmit={this.onSubmitEventHandler} className="note-input">
         <h1 className="note-input__title ">Buat catatan</h1>
         <p className="note-input__title__char-limit">
-          Sisa karakter
-          {character < 0 ? (
+          Judul maksimal {""}
+          {titleCharacter < 0 ? (
             <span style={{ color: "red" }}>lebih dari batas</span>
           ) : (
-            character
-          )}
+            <span style={{ fontWeight: "Bold", color: "white" }}>
+              {titleCharacter}
+            </span>
+          )}{" "}
+          karakter
         </p>
         <input
           type="text"
+          id="titleInput"
+          name="title"
           placeholder="Title..."
           value={this.state.title}
           onChange={this.onChangeTitle}
         />
         <textarea
-          name=""
-          id=""
+          id="bodyInput"
+          name="body"
           cols="30"
           rows="10"
           placeholder="Body.."

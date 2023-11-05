@@ -1,9 +1,9 @@
 import React from "react";
 import autoBind from "react-autobind";
-import Navbar from "./Navbar";
-import CatatanInput from "./CatatanInput";
-import { getInitialData } from "../utils/index";
-import CatatanList from "./CatatanList";
+import Navbar from "./components/Navbar"
+import CatatanInput from "./components/CatatanInput";
+import { getInitialData } from "./utils/index";
+import CatatanList from "./components/CatatanList";
 
 class CatatanApp extends React.Component {
   constructor(props) {
@@ -12,7 +12,6 @@ class CatatanApp extends React.Component {
     // inisialisasi state
     this.state = {
       catatan: getInitialData(),
-      archivedCatatan: [],
       searchCatatan: "",
       filterCatatan: [],
     };
@@ -38,24 +37,20 @@ class CatatanApp extends React.Component {
   }
 
   onDeleteCatatanHandler(id) {
-    const { catatan, archivedCatatan } = this.state;
-    const delcatatan = catatan.filter((note) => note.id !== id);
-    const delArsipcatatan = archivedCatatan.filter((note) => note.id !== id);
-    this.setState({ catatan: delcatatan, archivedCatatan: delArsipcatatan });
+    this.setState( prevState =>({
+      catatan: prevState.catatan.filter((note) => note.id !== id),
+    }));
   }
 
   onMoveArsipHandler(id) {
-    const { catatan, archivedCatatan } = this.state;
-    const updateToArsip = catatan.map((note) =>
-      note.id === id ? { ...note, archived: !note.archived } : note
-    );
-    const toArsip = updateToArsip.find((note) => note.id === id);
-    console.log(toArsip);
-    this.setState({
-      catatan: updateToArsip.filter((note) => note.id !== id),
-      archivedCatatan: [...archivedCatatan, toArsip],
-    });
-    console.log(archivedCatatan);
+    this.setState(prevState => {
+      return {
+        prevState: prevState.catatan.map(note =>
+          note.id === id ? (note.archived = !note.archived) : note
+        )
+      }
+    })
+  
   }
 
   onSearchArsipCatatan(event) {
@@ -64,15 +59,19 @@ class CatatanApp extends React.Component {
     });
   }
 
-  searchArchivedNotes = (searchTerm) => {
-    const { catatan } = this.state;
-    const filteredArchivedNotes = catatan.filter((note) =>
-      note.title.toLowerCase().includes(searchTerm.toLowerCase())
+  searchArchivedNotes() {
+    const { catatan, searchCatatan } = this.state;
+    return catatan.filter((note) =>
+      note.title.toLowerCase().includes(searchCatatan.toLowerCase())
     );
-    return filteredArchivedNotes;
+    
   };
 
   render() {
+   
+    const activeNotes = this.searchArchivedNotes().filter((note) => note.archived === false);
+    const archiveNotes = this.searchArchivedNotes().filter((note) => note.archived === true);
+  
     return (
       <>
         <Navbar
@@ -85,7 +84,8 @@ class CatatanApp extends React.Component {
           <h2>Catatan Aktif</h2>
 
           <CatatanList
-            catatan={this.state.catatan}
+            key={activeNotes.id}
+            catatan={activeNotes}
             onDelete={this.onDeleteCatatanHandler}
             onMove={this.onMoveArsipHandler}
           />
@@ -93,7 +93,8 @@ class CatatanApp extends React.Component {
           <h2>Arsip</h2>
 
           <CatatanList
-            catatan={this.state.archivedCatatan}
+            key={archiveNotes.id}
+            catatan={archiveNotes}
             onDelete={this.onDeleteCatatanHandler}
             onMove={this.onMoveArsipHandler}
           />
