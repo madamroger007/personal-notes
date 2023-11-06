@@ -15,9 +15,19 @@ class CatatanInput extends React.Component {
   }
 
   onChangeTitle(ev) {
+    const title = ev.target.value;
+    const length = title.length;
+
+    // Jika jumlah karakter lebih dari 50
+    if (length > 50) {
+      // Tampilkan peringatan
+      alert(`Judul tidak boleh lebih dari 50 karakter.`);
+      // Jangan ubah state
+      return;
+    }
     this.setState(() => {
       return {
-        title: ev.target.value,
+        title: title,
       };
     });
   }
@@ -37,6 +47,11 @@ class CatatanInput extends React.Component {
     titles > 50
       ? alert("Inputan Melebihi Batass!!")
       : this.props.addCatatan(this.state);
+
+    this.setState({
+      title: "",
+      body: "",
+    });
   }
 
   onLimitCharHandler(text, limit) {
